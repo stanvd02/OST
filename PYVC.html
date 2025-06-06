@@ -1,0 +1,2202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Python Visual Code - OST</title>
+    <script src="https://unpkg.com/blockly@10.2.2/blockly.min.js"></script>
+    <script src="https://unpkg.com/blockly@10.2.2/blocks_compressed.js"></script>
+    <script src="https://unpkg.com/blockly@10.2.2/python_compressed.js"></script>
+    <script src="https://unpkg.com/blockly@10.2.2/msg/en.js"></script>
+    <script src="https://unpkg.com/feather-icons"></script>
+    <style>
+        :root {
+            --primary-color: #2196F3;
+            --primary-dark: #1976D2;
+            --text-color: #333;
+            --border-color: #e0e0e0;
+            --background-color: #f5f5f5;
+            --card-background: #ffffff;
+            --danger-color: #dc2626;
+            --success-color: #4CAF50;
+        }
+
+        html, body {
+            height: 100%;
+            margin: 0;
+            font-family: 'Segoe UI', Arial, sans-serif;
+            overflow: hidden;
+            background: var(--background-color);
+            color: var(--text-color);
+        }
+
+        .nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 64px;
+            background: var(--card-background);
+            border-bottom: 1px solid var(--border-color);
+            z-index: 1000;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1rem;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .nav-logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text-color);
+            text-decoration: none;
+            letter-spacing: -0.5px;
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        .nav-links a {
+            color: var(--text-color);
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.2s;
+        }
+
+        .nav-links a:hover {
+            color: var(--primary-color);
+        }
+
+        #topBar {
+            position: fixed;
+            top: 64px;
+            left: 0;
+            right: 0;
+            height: 48px;
+            background: var(--card-background);
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            padding: 0 20px;
+            z-index: 999;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        .home-button {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 32px;
+            height: 32px;
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            text-decoration: none;
+            transition: all 0.2s;
+            margin-right: 16px;
+        }
+
+        .home-button:hover {
+            background: var(--primary-dark);
+            transform: translateY(-1px);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .home-button:active {
+            transform: translateY(0);
+            box-shadow: none;
+        }
+
+        .home-button i {
+            width: 18px;
+            height: 18px;
+        }
+
+        #editorName {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--primary-color);
+            margin-right: 20px;
+        }
+
+        #projectName {
+            font-size: 16px;
+            color: var(--text-color);
+            padding: 4px 8px;
+            border: 1px solid transparent;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        #projectName:hover {
+            background: var(--background-color);
+            border-color: var(--border-color);
+        }
+
+        #projectName.editing {
+            border-color: var(--primary-color);
+            background: var(--card-background);
+            outline: none;
+            cursor: text;
+        }
+
+        #blocklyDiv {
+            position: absolute;
+            top: 112px;
+            bottom: 200px;
+            left: 0;
+            right: 0;
+            background: var(--card-background);
+        }
+
+        #bottomContainer {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 200px;
+            background: var(--card-background);
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            z-index: 998;
+        }
+
+        #controls {
+            padding: 12px 20px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            gap: 8px;
+            background: var(--background-color);
+        }
+
+        #controls button {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            background: var(--primary-color);
+            color: white;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        #controls button:hover {
+            background: var(--primary-dark);
+            transform: translateY(-1px);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        #controls button:active {
+            transform: translateY(0);
+            box-shadow: none;
+        }
+
+        #codeArea {
+            flex: 1;
+            margin: 0;
+            padding: 12px 20px;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 14px;
+            line-height: 1.5;
+            color: var(--text-color);
+            background: var(--card-background);
+            overflow: auto;
+            white-space: pre;
+            tab-size: 4;
+        }
+
+        #outputDialog {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: var(--card-background);
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            width: 90%;
+            max-width: 600px;
+            z-index: 1000;
+            overflow: hidden;
+        }
+
+        #outputTitle {
+            padding: 16px 20px;
+            background: var(--primary-color);
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        #outputTitle h3 {
+            margin: 0;
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        #outputClose {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            padding: 0;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 4px;
+            transition: background-color 0.2s;
+        }
+
+        #outputClose:hover {
+            background: rgba(255,255,255,0.1);
+        }
+
+        #outputContent {
+            padding: 20px;
+            max-height: 70vh;
+            overflow-y: auto;
+        }
+
+        .output-error {
+            color: var(--danger-color);
+            white-space: pre-wrap;
+            font-family: 'Consolas', 'Monaco', monospace;
+        }
+
+        .output-success {
+            color: var(--success-color);
+            white-space: pre-wrap;
+            font-family: 'Consolas', 'Monaco', monospace;
+        }
+
+        .dialog {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: var(--card-background);
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            width: 90%;
+            max-width: 400px;
+            z-index: 1000;
+            overflow: hidden;
+        }
+
+        .dialog-title {
+            padding: 16px 20px;
+            background: var(--primary-color);
+            color: white;
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .dialog-content {
+            padding: 20px;
+        }
+
+        .dialog-input {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            font-size: 14px;
+            margin-bottom: 16px;
+        }
+
+        .dialog-buttons {
+            display: flex;
+            justify-content: flex-end;
+            gap: 8px;
+            padding: 12px 20px;
+            background: var(--background-color);
+            border-top: 1px solid var(--border-color);
+        }
+
+        .dialog-button {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .dialog-button.primary {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .dialog-button.secondary {
+            background: var(--background-color);
+            color: var(--text-color);
+            border: 1px solid var(--border-color);
+        }
+
+        .dialog-button:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .dialog-button:active {
+            transform: translateY(0);
+            box-shadow: none;
+        }
+
+        .blocklyToolboxDiv {
+            background: var(--card-background) !important;
+            border-right: 1px solid var(--border-color) !important;
+            box-shadow: 2px 0 5px rgba(0,0,0,0.1) !important;
+            width: 200px !important;
+        }
+
+        .blocklyTreeRoot {
+            padding: 8px 0 !important;
+        }
+
+        .blocklyTreeRow {
+            height: 32px !important;
+            padding: 0 8px !important;
+            margin: 2px 0 !important;
+            border-radius: 4px !important;
+            transition: all 0.2s !important;
+        }
+
+        .blocklyTreeRow:hover {
+            background: var(--background-color) !important;
+        }
+
+        .blocklyTreeSelected {
+            background: #FFE0B2 !important;
+            border: 2px solid #FF8C1A !important;
+            box-shadow: 0 2px 8px rgba(255, 140, 26, 0.2) !important;
+        }
+
+        .blocklyTreeSelected .blocklyTreeLabel {
+            color: #000000 !important;
+            font-weight: 600 !important;
+        }
+
+        .blocklyTreeSelected .blocklyTreeIcon::before {
+            color: #FF8C1A !important;
+            opacity: 1 !important;
+        }
+
+        .blocklyTreeSelected:hover {
+            background: #FFE0B2 !important;
+            transform: none !important;
+            box-shadow: 0 2px 8px rgba(255, 140, 26, 0.2) !important;
+        }
+
+        .blocklyTreeRow:hover:not(.blocklyTreeSelected) {
+            background: #FFF3E0 !important;
+            transform: translateY(-2px) !important;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15) !important;
+        }
+
+        .blocklyTreeRow:hover:not(.blocklyTreeSelected) .blocklyTreeLabel {
+            color: #000000 !important;
+        }
+
+        .blocklyTreeLabel {
+            font-family: 'Segoe UI', Arial, sans-serif !important;
+            font-size: 14px !important;
+            padding: 0 4px !important;
+        }
+
+        .blocklyTreeIcon {
+            background-image: none !important;
+            width: 16px !important;
+            height: 16px !important;
+            margin-right: 8px !important;
+        }
+
+        .blocklyTreeIcon::before {
+            content: '▶' !important;
+            font-size: 12px !important;
+            color: #757575 !important;
+        }
+
+        .blocklyTreeOpen .blocklyTreeIcon::before {
+            content: '▼' !important;
+        }
+
+        .blocklyPathLight, .blocklyPathDark {
+            fill-opacity: 1 !important;
+        }
+
+        .blocklyInvalidConnection {
+            stroke: var(--danger-color) !important;
+            stroke-width: 3px !important;
+        }
+
+        .blocklyInvalidBlock {
+            filter: drop-shadow(0 0 5px var(--danger-color));
+        }
+    </style>
+</head>
+<body>
+    <nav class="nav">
+        <div class="nav-container">
+            <a href="/" class="nav-logo">OST</a>
+            <div class="nav-links">
+                <a href="/">Home</a>
+                <a href="/#features">Features</a>
+                <a href="/#about">About</a>
+                <a href="mailto:stanvandorsten@gmail.com">Contact</a>
+            </div>
+        </div>
+    </nav>
+
+    <div id="topBar">
+        <a href="apps.html" class="home-button" title="Back to Apps">
+            <i data-feather="home"></i>
+        </a>
+        <div id="editorName">Python Visual Code</div>
+        <div id="projectName" contenteditable="false">Untitled Project</div>
+    </div>
+
+    <div id="blocklyDiv"></div>
+
+    <div id="bottomContainer">
+        <div id="controls">
+            <button id="generateBtn">
+                <i data-feather="code"></i>
+                Generate Python
+            </button>
+            <button id="runBtn">
+                <i data-feather="play"></i>
+                Run Code
+            </button>
+            <button id="saveBtn">
+                <i data-feather="save"></i>
+                Save
+            </button>
+            <button id="savePyBtn">
+                <i data-feather="download"></i>
+                Save as Python
+            </button>
+            <button id="loadBtn">
+                <i data-feather="upload"></i>
+                Load
+            </button>
+        </div>
+        <pre id="codeArea"></pre>
+    </div>
+
+    <xml id="toolbox" style="display:none">
+        <category name="Logic" colour="#FF8C1A">
+            <block type="controls_if"></block>
+            <block type="controls_if">
+                <mutation else="1"></mutation>
+            </block>
+            <block type="controls_if">
+                <mutation else="1" elseif="1"></mutation>
+            </block>
+            <block type="logic_compare"></block>
+            <block type="logic_operation"></block>
+            <block type="logic_negate"></block>
+            <block type="logic_boolean"></block>
+            <block type="logic_null"></block>
+            <block type="logic_ternary"></block>
+        </category>
+        <category name="Loops" colour="#FFD500">
+            <block type="controls_repeat_ext"></block>
+            <block type="controls_whileUntil"></block>
+            <block type="controls_for"></block>
+            <block type="controls_forEach"></block>
+            <block type="controls_flow_statements"></block>
+            <block type="controls_repeat"></block>
+        </category>
+        <category name="Math" colour="#FF6B6B">
+            <block type="math_number"></block>
+            <block type="math_arithmetic"></block>
+            <block type="math_single"></block>
+            <block type="math_trig"></block>
+            <block type="math_constant"></block>
+            <block type="math_number_property"></block>
+            <block type="math_round"></block>
+            <block type="math_on_list"></block>
+            <block type="math_modulo"></block>
+            <block type="math_random_int"></block>
+            <block type="math_random_float"></block>
+        </category>
+        <category name="Text" colour="#4ECDC4">
+            <block type="text"></block>
+            <block type="text_join"></block>
+            <block type="text_append"></block>
+            <block type="text_length"></block>
+            <block type="text_isEmpty"></block>
+            <block type="text_indexOf"></block>
+            <block type="text_charAt"></block>
+            <block type="text_getSubstring"></block>
+            <block type="text_changeCase"></block>
+            <block type="text_trim"></block>
+            <block type="text_print"></block>
+            <block type="text_prompt_ext"></block>
+        </category>
+        <category name="Lists" colour="#6C5CE7">
+            <block type="lists_create_with"></block>
+            <block type="lists_create_with">
+                <mutation items="0"></mutation>
+            </block>
+            <block type="lists_addItems"></block>
+            <block type="lists_isEmpty"></block>
+            <block type="lists_length"></block>
+            <block type="lists_indexOf"></block>
+            <block type="lists_getIndex"></block>
+            <block type="lists_setIndex"></block>
+            <block type="lists_getSublist"></block>
+        </category>
+        <category name="Variables" custom="VARIABLE" colour="#FF9F1C"></category>
+        <category name="Functions" custom="PROCEDURE" colour="#A8E6CF"></category>
+        <category name="Actions" colour="#FF8B94">
+            <block type="start_block"></block>
+            <block type="end_block"></block>
+        </category>
+        <category name="Tkinter" colour="#E53935">
+            <category name="Basic Widgets" colour="#E53935">
+                <block type="tkinter_window"></block>
+                <block type="tkinter_label"></block>
+                <block type="tkinter_button"></block>
+                <block type="tkinter_entry"></block>
+                <block type="tkinter_text"></block>
+                <block type="tkinter_button_command"></block>
+            </category>
+            <category name="More Widgets" colour="#FB8C00">
+                <block type="tkinter_checkbutton"></block>
+                <block type="tkinter_radiobutton"></block>
+                <block type="tkinter_listbox"></block>
+                <block type="tkinter_scale"></block>
+                <block type="tkinter_spinbox"></block>
+                <block type="tkinter_combobox"></block>
+                <block type="tkinter_menu"></block>
+                <block type="tkinter_canvas"></block>
+                <block type="tkinter_frame"></block>
+            </category>
+            <category name="Layout" colour="#F57C00">
+                <block type="tkinter_pack"></block>
+                <block type="tkinter_pack_options"></block>
+                <block type="tkinter_grid"></block>
+                <block type="tkinter_grid_options"></block>
+                <block type="tkinter_place"></block>
+                <block type="tkinter_place_options"></block>
+            </category>
+            <category name="Configuration" colour="#00897B">
+                <block type="tkinter_configure"></block>
+                <block type="tkinter_font"></block>
+                <block type="tkinter_color"></block>
+                <block type="tkinter_size"></block>
+                <block type="tkinter_state"></block>
+                <block type="tkinter_relief"></block>
+            </category>
+            <category name="Events" colour="#5E35B1">
+                <block type="tkinter_bind"></block>
+                <block type="tkinter_key_event"></block>
+                <block type="tkinter_mouse_event"></block>
+                <block type="tkinter_focus_event"></block>
+                <block type="tkinter_window_event"></block>
+            </category>
+        </category>
+    </xml>
+
+    <script>
+        feather.replace();
+        // Add global workspace variable
+        let workspace = null;
+        let variableCounter = 0;
+        let usesTkinter = false;
+        let currentProjectName = 'Untitled Project';
+
+        function getUniqueVarName(baseName) {
+            variableCounter++;
+            return `${baseName}_${variableCounter}`;
+        }
+
+        function defineCustomBlocks() {
+            Blockly.defineBlocksWithJsonArray([
+                {
+                    "type": "start_block",
+                    "message0": "on start %1 do %2",
+                    "args0": [
+                        { "type": "input_dummy" },
+                        { "type": "input_statement", "name": "DO" }
+                    ],
+                    "colour": "#FB8C00",
+                    "tooltip": "Run at program start",
+                    "helpUrl": ""
+                },
+                {
+                    "type": "end_block",
+                    "message0": "end program",
+                    "previousStatement": null,
+                    "colour": "#FF8B94",
+                    "tooltip": "End the program",
+                    "helpUrl": ""
+                },
+                {
+                    "type": "tkinter_window",
+                    "message0": "create window %1 title: %2",
+                    "args0": [
+                        { "type": "input_dummy" },
+                        { "type": "input_value", "name": "TITLE", "check": "String" }
+                    ],
+                    "previousStatement": null,
+                    "nextStatement": null,
+                    "colour": "#E53935",
+                    "tooltip": "Create a new Tkinter window",
+                    "helpUrl": ""
+                },
+                {
+                    "type": "tkinter_label",
+                    "message0": "create label %1 text: %2",
+                    "args0": [
+                        { "type": "input_dummy" },
+                        { "type": "input_value", "name": "TEXT", "check": "String" }
+                    ],
+                    "previousStatement": null,
+                    "nextStatement": null,
+                    "colour": "#E53935",
+                    "tooltip": "Create a label widget",
+                    "helpUrl": ""
+                },
+                {
+                    "type": "tkinter_button",
+                    "message0": "create button %1 text: %2",
+                    "args0": [
+                        { "type": "input_dummy" },
+                        { "type": "input_value", "name": "TEXT", "check": "String" }
+                    ],
+                    "previousStatement": null,
+                    "nextStatement": null,
+                    "colour": "#E53935",
+                    "tooltip": "Create a button widget",
+                    "helpUrl": ""
+                },
+                {
+                    "type": "tkinter_entry",
+                    "message0": "create entry %1",
+                    "args0": [
+                        { "type": "input_dummy" }
+                    ],
+                    "previousStatement": null,
+                    "nextStatement": null,
+                    "colour": "#E53935",
+                    "tooltip": "Create an entry widget",
+                    "helpUrl": ""
+                },
+                {
+                    "type": "tkinter_text",
+                    "message0": "create text widget %1",
+                    "args0": [
+                        { "type": "input_dummy" }
+                    ],
+                    "previousStatement": null,
+                    "nextStatement": null,
+                    "colour": "#E53935",
+                    "tooltip": "Create a text widget",
+                    "helpUrl": ""
+                },
+                {
+                    "type": "tkinter_button_command",
+                    "message0": "when button %1 is clicked %2",
+                    "args0": [
+                        { "type": "input_value", "name": "BUTTON", "check": "String" },
+                        { "type": "input_statement", "name": "COMMANDS" }
+                    ],
+                    "previousStatement": null,
+                    "nextStatement": null,
+                    "colour": "#E53935",
+                    "tooltip": "Define button click command",
+                    "helpUrl": ""
+                },
+                {
+                    "type": "tkinter_pack",
+                    "message0": "pack widget %1",
+                    "args0": [
+                        { "type": "input_value", "name": "WIDGET", "check": "String" }
+                    ],
+                    "previousStatement": null,
+                    "nextStatement": null,
+                    "colour": "#F57C00",
+                    "tooltip": "Pack a widget",
+                    "helpUrl": ""
+                },
+                {
+                    "type": "tkinter_grid",
+                    "message0": "grid widget %1 row: %2 column: %3",
+                    "args0": [
+                        { "type": "input_value", "name": "WIDGET", "check": "String" },
+                        { "type": "input_value", "name": "ROW", "check": "Number" },
+                        { "type": "input_value", "name": "COLUMN", "check": "Number" }
+                    ],
+                    "previousStatement": null,
+                    "nextStatement": null,
+                    "colour": "#F57C00",
+                    "tooltip": "Grid a widget",
+                    "helpUrl": ""
+                },
+                {
+                    "type": "tkinter_checkbutton",
+                    "message0": "create checkbox %1 text: %2 variable: %3",
+                    "args0": [
+                        { "type": "input_dummy" },
+                        { "type": "input_value", "name": "TEXT", "check": "String" },
+                        { "type": "input_value", "name": "VAR", "check": "String" }
+                    ],
+                    "previousStatement": null,
+                    "nextStatement": null,
+                    "colour": "#FB8C00",
+                    "tooltip": "Create a checkbox widget",
+                    "helpUrl": ""
+                },
+                {
+                    "type": "tkinter_radiobutton",
+                    "message0": "create radio button %1 text: %2 variable: %3 value: %4",
+                    "args0": [
+                        { "type": "input_dummy" },
+                        { "type": "input_value", "name": "TEXT", "check": "String" },
+                        { "type": "input_value", "name": "VAR", "check": "String" },
+                        { "type": "input_value", "name": "VALUE", "check": "Number" }
+                    ],
+                    "previousStatement": null,
+                    "nextStatement": null,
+                    "colour": "#FB8C00",
+                    "tooltip": "Create a radio button widget",
+                    "helpUrl": ""
+                },
+                {
+                    "type": "tkinter_listbox",
+                    "message0": "create listbox %1 height: %2",
+                    "args0": [
+                        { "type": "input_dummy" },
+                        { "type": "input_value", "name": "HEIGHT", "check": "Number" }
+                    ],
+                    "previousStatement": null,
+                    "nextStatement": null,
+                    "colour": "#FB8C00",
+                    "tooltip": "Create a listbox widget",
+                    "helpUrl": ""
+                },
+                {
+                    "type": "tkinter_scale",
+                    "message0": "create scale %1 from: %2 to: %3",
+                    "args0": [
+                        { "type": "input_dummy" },
+                        { "type": "input_value", "name": "FROM", "check": "Number" },
+                        { "type": "input_value", "name": "TO", "check": "Number" }
+                    ],
+                    "previousStatement": null,
+                    "nextStatement": null,
+                    "colour": "#FB8C00",
+                    "tooltip": "Create a scale widget",
+                    "helpUrl": ""
+                },
+                {
+                    "type": "tkinter_spinbox",
+                    "message0": "create spinbox %1 from: %2 to: %3",
+                    "args0": [
+                        { "type": "input_dummy" },
+                        { "type": "input_value", "name": "FROM", "check": "Number" },
+                        { "type": "input_value", "name": "TO", "check": "Number" }
+                    ],
+                    "previousStatement": null,
+                    "nextStatement": null,
+                    "colour": "#FB8C00",
+                    "tooltip": "Create a spinbox widget",
+                    "helpUrl": ""
+                },
+                {
+                    "type": "tkinter_combobox",
+                    "message0": "create combobox %1 values: %2",
+                    "args0": [
+                        { "type": "input_dummy" },
+                        { "type": "input_value", "name": "VALUES", "check": "Array" }
+                    ],
+                    "previousStatement": null,
+                    "nextStatement": null,
+                    "colour": "#FB8C00",
+                    "tooltip": "Create a combobox widget",
+                    "helpUrl": ""
+                },
+                {
+                    "type": "tkinter_menu",
+                    "message0": "create menu %1",
+                    "args0": [
+                        { "type": "input_dummy" }
+                    ],
+                    "previousStatement": null,
+                    "nextStatement": null,
+                    "colour": "#FB8C00",
+                    "tooltip": "Create a menu widget",
+                    "helpUrl": ""
+                },
+                {
+                    "type": "tkinter_canvas",
+                    "message0": "create canvas %1 width: %2 height: %3",
+                    "args0": [
+                        { "type": "input_dummy" },
+                        { "type": "input_value", "name": "WIDTH", "check": "Number" },
+                        { "type": "input_value", "name": "HEIGHT", "check": "Number" }
+                    ],
+                    "previousStatement": null,
+                    "nextStatement": null,
+                    "colour": "#FF9F1C",
+                    "tooltip": "Create a canvas widget",
+                    "helpUrl": ""
+                },
+                {
+                    "type": "tkinter_frame",
+                    "message0": "create frame %1",
+                    "args0": [
+                        { "type": "input_dummy" }
+                    ],
+                    "previousStatement": null,
+                    "nextStatement": null,
+                    "colour": "#FF9F1C",
+                    "tooltip": "Create a frame widget",
+                    "helpUrl": ""
+                },
+                {
+                    "type": "tkinter_place",
+                    "message0": "place widget %1 x: %2 y: %3",
+                    "args0": [
+                        { "type": "input_value", "name": "WIDGET", "check": "String" },
+                        { "type": "input_value", "name": "X", "check": "Number" },
+                        { "type": "input_value", "name": "Y", "check": "Number" }
+                    ],
+                    "previousStatement": null,
+                    "nextStatement": null,
+                    "colour": "#FFD93D",
+                    "tooltip": "Place a widget using absolute positioning",
+                    "helpUrl": ""
+                },
+                {
+                    "type": "tkinter_pack_options",
+                    "message0": "pack widget %1 side: %2 fill: %3 expand: %4",
+                    "args0": [
+                        { "type": "input_value", "name": "WIDGET", "check": "String" },
+                        { "type": "field_dropdown", "name": "SIDE", "options": [["top", "tk.TOP"], ["bottom", "tk.BOTTOM"], ["left", "tk.LEFT"], ["right", "tk.RIGHT"]] },
+                        { "type": "field_dropdown", "name": "FILL", "options": [["none", "tk.NONE"], ["x", "tk.X"], ["y", "tk.Y"], ["both", "tk.BOTH"]] },
+                        { "type": "field_checkbox", "name": "EXPAND", "checked": false }
+                    ],
+                    "previousStatement": null,
+                    "nextStatement": null,
+                    "colour": "#FFD93D",
+                    "tooltip": "Pack a widget with options",
+                    "helpUrl": ""
+                },
+                {
+                    "type": "tkinter_configure",
+                    "message0": "configure widget %1 %2",
+                    "args0": [
+                        { "type": "input_value", "name": "WIDGET", "check": "String" },
+                        { "type": "input_statement", "name": "OPTIONS" }
+                    ],
+                    "previousStatement": null,
+                    "nextStatement": null,
+                    "colour": "#4ECDC4",
+                    "tooltip": "Configure widget properties",
+                    "helpUrl": ""
+                },
+                {
+                    "type": "tkinter_font",
+                    "message0": "set font family: %1 size: %2 style: %3",
+                    "args0": [
+                        { "type": "input_value", "name": "FAMILY", "check": "String" },
+                        { "type": "input_value", "name": "SIZE", "check": "Number" },
+                        { "type": "field_dropdown", "name": "STYLE", "options": [["normal", "normal"], ["bold", "bold"], ["italic", "italic"], ["bold italic", "bold italic"]] }
+                    ],
+                    "output": "Font",
+                    "colour": "#4ECDC4",
+                    "tooltip": "Create a font configuration",
+                    "helpUrl": ""
+                },
+                {
+                    "type": "tkinter_color",
+                    "message0": "set color %1",
+                    "args0": [
+                        { "type": "field_colour", "name": "COLOR" }
+                    ],
+                    "output": "String",
+                    "colour": "#4ECDC4",
+                    "tooltip": "Select a color",
+                    "helpUrl": ""
+                },
+                {
+                    "type": "tkinter_size",
+                    "message0": "set size width: %1 height: %2",
+                    "args0": [
+                        { "type": "input_value", "name": "WIDTH", "check": "Number" },
+                        { "type": "input_value", "name": "HEIGHT", "check": "Number" }
+                    ],
+                    "output": "String",
+                    "colour": "#4ECDC4",
+                    "tooltip": "Set widget size",
+                    "helpUrl": ""
+                },
+                {
+                    "type": "tkinter_state",
+                    "message0": "set state %1",
+                    "args0": [
+                        { "type": "field_dropdown", "name": "STATE", "options": [
+                            ["normal", "normal"],
+                            ["disabled", "disabled"],
+                            ["readonly", "readonly"]
+                        ]}
+                    ],
+                    "output": "String",
+                    "colour": "#4ECDC4",
+                    "tooltip": "Set widget state",
+                    "helpUrl": ""
+                },
+                {
+                    "type": "tkinter_relief",
+                    "message0": "set relief %1",
+                    "args0": [
+                        { "type": "field_dropdown", "name": "RELIEF", "options": [
+                            ["flat", "flat"],
+                            ["raised", "raised"],
+                            ["sunken", "sunken"],
+                            ["ridge", "ridge"],
+                            ["groove", "groove"],
+                            ["solid", "solid"]
+                        ]}
+                    ],
+                    "output": "String",
+                    "colour": "#4ECDC4",
+                    "tooltip": "Set widget relief style",
+                    "helpUrl": ""
+                },
+                {
+                    "type": "tkinter_bind",
+                    "message0": "bind %1 to widget %2 %3",
+                    "args0": [
+                        { "type": "field_dropdown", "name": "EVENT", "options": [
+                            ["key press", "<KeyPress>"],
+                            ["key release", "<KeyRelease>"],
+                            ["button press", "<ButtonPress>"],
+                            ["button release", "<ButtonRelease>"],
+                            ["mouse motion", "<Motion>"],
+                            ["focus in", "<FocusIn>"],
+                            ["focus out", "<FocusOut>"],
+                            ["window close", "<Destroy>"]
+                        ]},
+                        { "type": "input_value", "name": "WIDGET", "check": "String" },
+                        { "type": "input_statement", "name": "COMMANDS" }
+                    ],
+                    "previousStatement": null,
+                    "nextStatement": null,
+                    "colour": "#6C5CE7",
+                    "tooltip": "Bind an event to a widget",
+                    "helpUrl": ""
+                },
+                {
+                    "type": "tkinter_grid_options",
+                    "message0": "grid widget %1 row: %2 column: %3 sticky: %4",
+                    "args0": [
+                        { "type": "input_value", "name": "WIDGET", "check": "String" },
+                        { "type": "input_value", "name": "ROW", "check": "Number" },
+                        { "type": "input_value", "name": "COLUMN", "check": "Number" },
+                        { "type": "field_dropdown", "name": "STICKY", "options": [
+                            ["none", ""],
+                            ["n", "n"],
+                            ["s", "s"],
+                            ["e", "e"],
+                            ["w", "w"],
+                            ["nsew", "nsew"]
+                        ]}
+                    ],
+                    "previousStatement": null,
+                    "nextStatement": null,
+                    "colour": "#FFD93D",
+                    "tooltip": "Grid a widget with options",
+                    "helpUrl": ""
+                },
+                {
+                    "type": "tkinter_place_options",
+                    "message0": "place widget %1 x: %2 y: %3 anchor: %4",
+                    "args0": [
+                        { "type": "input_value", "name": "WIDGET", "check": "String" },
+                        { "type": "input_value", "name": "X", "check": "Number" },
+                        { "type": "input_value", "name": "Y", "check": "Number" },
+                        { "type": "field_dropdown", "name": "ANCHOR", "options": [
+                            ["nw", "nw"],
+                            ["n", "n"],
+                            ["ne", "ne"],
+                            ["w", "w"],
+                            ["center", "center"],
+                            ["e", "e"],
+                            ["sw", "sw"],
+                            ["s", "s"],
+                            ["se", "se"]
+                        ]}
+                    ],
+                    "previousStatement": null,
+                    "nextStatement": null,
+                    "colour": "#FFD93D",
+                    "tooltip": "Place a widget with options",
+                    "helpUrl": ""
+                },
+                {
+                    "type": "controls_switch",
+                    "message0": "switch %1 %2",
+                    "args0": [
+                        {
+                            "type": "input_value",
+                            "name": "SWITCH_EXPRESSION"
+                        },
+                        {
+                            "type": "input_statement",
+                            "name": "SWITCH_CASES"
+                        }
+                    ],
+                    "previousStatement": null,
+                    "nextStatement": null,
+                    "colour": "#FF8C1A",
+                    "tooltip": "Switch statement",
+                    "helpUrl": "",
+                    "mutator": "controls_switch_mutator"
+                },
+                {
+                    "type": "controls_case",
+                    "message0": "case %1: %2",
+                    "args0": [
+                        {
+                            "type": "input_value",
+                            "name": "CASE_VALUE"
+                        },
+                        {
+                            "type": "input_statement",
+                            "name": "CASE_STATEMENTS"
+                        }
+                    ],
+                    "previousStatement": null,
+                    "nextStatement": null,
+                    "colour": "#FF8C1A",
+                    "tooltip": "Case statement for switch",
+                    "helpUrl": ""
+                },
+                {
+                    "type": "controls_default",
+                    "message0": "default: %1",
+                    "args0": [
+                        {
+                            "type": "input_statement",
+                            "name": "DEFAULT_STATEMENTS"
+                        }
+                    ],
+                    "previousStatement": null,
+                    "nextStatement": null,
+                    "colour": "#FF8C1A",
+                    "tooltip": "Default case for switch",
+                    "helpUrl": ""
+                }
+            ]);
+
+            // Update all tkinter blocks to set the flag
+            const tkinterBlocks = [
+                'tkinter_window', 'tkinter_label', 'tkinter_button', 'tkinter_entry',
+                'tkinter_text', 'tkinter_checkbutton', 'tkinter_radiobutton',
+                'tkinter_listbox', 'tkinter_scale', 'tkinter_spinbox', 'tkinter_combobox',
+                'tkinter_menu', 'tkinter_canvas', 'tkinter_frame'
+            ];
+
+            // Update window block to ensure proper line breaks and initialization
+            Blockly.Python.forBlock['tkinter_window'] = function(block) {
+                usesTkinter = true;
+                const title = Blockly.Python.valueToCode(block, 'TITLE', Blockly.Python.ORDER_NONE) || '""';
+                variableCounter = 0; // Reset variable counter for new window
+                return `    root = tk.Tk()\n    root.title(${title})\n`;
+            };
+
+            // Update start block to handle line breaks properly
+            Blockly.Python.forBlock['start_block'] = function(block) {
+                usesTkinter = false; // Reset the flag for each new program
+                const statements = Blockly.Python.statementToCode(block, 'DO');
+                
+                // Check if end block is used
+                const workspace = block.workspace;
+                const hasEndBlock = workspace.getAllBlocks().some(b => b.type === 'end_block');
+                const hasTkinterBlocks = workspace.getAllBlocks().some(b => b.type.startsWith('tkinter_'));
+                
+                // First, ensure all statements use spaces and are properly indented
+                const cleanStatements = statements.split('\n')
+                    .map(line => line.replace(/\t/g, '    ')) // Replace tabs with spaces
+                    .map(line => line.trim()) // Remove leading/trailing whitespace
+                    .filter(line => line.length > 0) // Remove empty lines
+                    .join('\n');
+                
+                // Then add proper indentation
+                const indentedStatements = Blockly.Python.prefixLines(cleanStatements, '    ');
+                
+                // Construct the final code with proper order, conditional imports, and line breaks
+                const codeLines = [
+                    "if __name__ == '__main__':"
+                ];
+
+                if (hasEndBlock) {
+                    codeLines.push("    import sys");
+                }
+
+                if (hasTkinterBlocks) {
+                    codeLines.push("    import tkinter as tk");
+                    usesTkinter = true;
+                }
+
+                // Add the statements with proper line breaks
+                if (indentedStatements) {
+                    codeLines.push(indentedStatements);
+                }
+
+                // Add appropriate loop based on program type
+                if (hasTkinterBlocks) {
+                    codeLines.push("    root.mainloop()");
+                } else if (!hasEndBlock) {
+                    // For non-Tkinter programs without an end block, add an input() to keep the window open
+                    codeLines.push("    input('Press Enter to exit...')");
+                }
+
+                // Join with proper line breaks and add final newline
+                return codeLines.join('\n') + '\n';
+            };
+
+            // Update widget generators to properly handle text values and window reference
+            const widgetGenerators = {
+                'tkinter_label': function(block) {
+                    usesTkinter = true;
+                    const text = Blockly.Python.valueToCode(block, 'TEXT', Blockly.Python.ORDER_NONE) || '""';
+                    const varName = `label_${variableCounter++}`;
+                    return [
+                        `    ${varName} = tk.Label(root, text=${text})`,
+                        `    ${varName}.pack()`
+                    ].join('\n') + '\n';
+                },
+                'tkinter_button': function(block) {
+                    usesTkinter = true;
+                    const text = Blockly.Python.valueToCode(block, 'TEXT', Blockly.Python.ORDER_NONE) || '""';
+                    const varName = `button_${variableCounter++}`;
+                    return [
+                        `    ${varName} = tk.Button(root, text=${text})`,
+                        `    ${varName}.pack()`
+                    ].join('\n') + '\n';
+                },
+                'tkinter_entry': function(block) {
+                    usesTkinter = true;
+                    const varName = `entry_${variableCounter++}`;
+                    return [
+                        `    ${varName} = tk.Entry(root)`,
+                        `    ${varName}.pack()`
+                    ].join('\n') + '\n';
+                },
+                'tkinter_text': function(block) {
+                    usesTkinter = true;
+                    const varName = `text_widget_${variableCounter++}`;
+                    return [
+                        `    ${varName} = tk.Text(root)`,
+                        `    ${varName}.pack()`
+                    ].join('\n') + '\n';
+                },
+                'tkinter_checkbutton': function(block) {
+                    usesTkinter = true;
+                    const text = Blockly.Python.valueToCode(block, 'TEXT', Blockly.Python.ORDER_NONE) || '""';
+                    const varName = `checkbox_${variableCounter++}`;
+                    const boolVarName = getUniqueVarName('var');
+                    return [
+                        `    ${boolVarName} = tk.BooleanVar()`,
+                        `    ${varName} = tk.Checkbutton(root, text=${text}, variable=${boolVarName})`,
+                        `    ${varName}.pack()`
+                    ].join('\n') + '\n';
+                }
+            };
+
+            // Update the widget block generators to use the new format
+            for (const [blockType, generator] of Object.entries(widgetGenerators)) {
+                Blockly.Python.forBlock[blockType] = generator;
+            }
+
+            Blockly.Python.forBlock['tkinter_button_command'] = function(block) {
+                const button = Blockly.Python.valueToCode(block, 'BUTTON', Blockly.Python.ORDER_NONE) || 'button';
+                const commands = Blockly.Python.statementToCode(block, 'COMMANDS');
+                const funcName = 'button_click';
+                return `def ${funcName}():\n${Blockly.Python.prefixLines(commands, '  ')}\n${button}.config(command=${funcName})\n`;
+            };
+
+            Blockly.Python.forBlock['tkinter_pack'] = function(block) {
+                const widget = Blockly.Python.valueToCode(block, 'WIDGET', Blockly.Python.ORDER_NONE) || 'widget';
+                return `${widget}.pack()\n`;
+            };
+
+            Blockly.Python.forBlock['tkinter_grid'] = function(block) {
+                const widget = Blockly.Python.valueToCode(block, 'WIDGET', Blockly.Python.ORDER_NONE) || 'widget';
+                const row = Blockly.Python.valueToCode(block, 'ROW', Blockly.Python.ORDER_NONE) || '0';
+                const column = Blockly.Python.valueToCode(block, 'COLUMN', Blockly.Python.ORDER_NONE) || '0';
+                return `${widget}.grid(row=${row}, column=${column})\n`;
+            };
+
+            Blockly.Python.forBlock['tkinter_pack_options'] = function(block) {
+                const widget = Blockly.Python.valueToCode(block, 'WIDGET', Blockly.Python.ORDER_NONE) || 'widget';
+                const side = block.getFieldValue('SIDE');
+                const fill = block.getFieldValue('FILL');
+                const expand = block.getFieldValue('EXPAND') === 'TRUE';
+                return `${widget}.pack(side=${side}, fill=${fill}, expand=${expand})\n`;
+            };
+
+            Blockly.Python.forBlock['tkinter_configure'] = function(block) {
+                const widget = Blockly.Python.valueToCode(block, 'WIDGET', Blockly.Python.ORDER_NONE) || 'widget';
+                const options = Blockly.Python.statementToCode(block, 'OPTIONS');
+                return `${widget}.configure(\n${Blockly.Python.prefixLines(options, '  ')})\n`;
+            };
+
+            Blockly.Python.forBlock['tkinter_font'] = function(block) {
+                const family = Blockly.Python.valueToCode(block, 'FAMILY', Blockly.Python.ORDER_NONE) || '"Arial"';
+                const size = Blockly.Python.valueToCode(block, 'SIZE', Blockly.Python.ORDER_NONE) || '10';
+                const style = block.getFieldValue('STYLE');
+                return `tk.font.Font(family=${family}, size=${size}, weight="${style.includes('bold') ? 'bold' : 'normal'}", slant="${style.includes('italic') ? 'italic' : 'roman'}")`;
+            };
+
+            Blockly.Python.forBlock['tkinter_color'] = function(block) {
+                const color = block.getFieldValue('COLOR');
+                return `"${color}"`;
+            };
+
+            Blockly.Python.forBlock['tkinter_bind'] = function(block) {
+                const event = block.getFieldValue('EVENT');
+                const widget = Blockly.Python.valueToCode(block, 'WIDGET', Blockly.Python.ORDER_NONE) || 'widget';
+                const commands = Blockly.Python.statementToCode(block, 'COMMANDS');
+                const funcName = 'event_handler';
+                return `def ${funcName}(event):\n${Blockly.Python.prefixLines(commands, '  ')}\n${widget}.bind('${event}', ${funcName})\n`;
+            };
+
+            Blockly.Python.forBlock['tkinter_grid_options'] = function(block) {
+                const widget = Blockly.Python.valueToCode(block, 'WIDGET', Blockly.Python.ORDER_NONE) || 'widget';
+                const row = Blockly.Python.valueToCode(block, 'ROW', Blockly.Python.ORDER_NONE) || '0';
+                const column = Blockly.Python.valueToCode(block, 'COLUMN', Blockly.Python.ORDER_NONE) || '0';
+                const sticky = block.getFieldValue('STICKY');
+                return `${widget}.grid(row=${row}, column=${column}${sticky ? `, sticky='${sticky}'` : ''})\n`;
+            };
+
+            Blockly.Python.forBlock['tkinter_place_options'] = function(block) {
+                const widget = Blockly.Python.valueToCode(block, 'WIDGET', Blockly.Python.ORDER_NONE) || 'widget';
+                const x = Blockly.Python.valueToCode(block, 'X', Blockly.Python.ORDER_NONE) || '0';
+                const y = Blockly.Python.valueToCode(block, 'Y', Blockly.Python.ORDER_NONE) || '0';
+                const anchor = block.getFieldValue('ANCHOR');
+                return `${widget}.place(x=${x}, y=${y}, anchor='${anchor}')\n`;
+            };
+
+            // Add block validation
+            function validateBlockOrder(block) {
+                const workspace = block.workspace;
+                if (!workspace) return;
+
+                // Get all blocks in the workspace
+                const allBlocks = workspace.getAllBlocks();
+                
+                // Find the start block
+                const startBlock = allBlocks.find(b => b.type === 'start_block');
+                if (!startBlock) return;
+
+                // Reset all blocks to valid state
+                allBlocks.forEach(b => {
+                    b.setStyle(b.type === 'start_block' ? '#FF9F1C' : b.type.startsWith('tkinter_') ? '#FF6B6B' : null);
+                    b.setWarningText(null);
+                });
+
+                // Check if window block exists and is in correct position
+                const windowBlock = allBlocks.find(b => b.type === 'tkinter_window');
+                if (windowBlock) {
+                    // Window block should be first after start block
+                    const windowConnection = startBlock.nextConnection?.targetBlock();
+                    if (windowConnection !== windowBlock) {
+                        windowBlock.setWarningText('Window block must be the first block after start');
+                        windowBlock.setStyle('#FF0000');
+                    }
+                }
+
+                // Check if any tkinter blocks exist without a window block
+                if (!windowBlock) {
+                    allBlocks.forEach(b => {
+                        if (b.type.startsWith('tkinter_') && b.type !== 'tkinter_window') {
+                            b.setWarningText('Window block must be created before other Tkinter widgets');
+                            b.setStyle('#FF0000');
+                        }
+                    });
+                }
+            }
+
+            // Register the validation function
+            Blockly.Events.disableOrphans = true;
+            Blockly.Events.BLOCK_MOVE = function(block) {
+                validateBlockOrder(block);
+            };
+            Blockly.Events.BLOCK_CREATE = function(block) {
+                validateBlockOrder(block);
+            };
+            Blockly.Events.BLOCK_DELETE = function(block) {
+                validateBlockOrder(block);
+            };
+
+            // Add generator for end block
+            Blockly.Python.forBlock['end_block'] = function(block) {
+                return '    sys.exit()\n';
+            };
+
+            // Fix list block stacking by updating the workspace options
+            const workspace = Blockly.getMainWorkspace();
+            if (workspace) {
+                workspace.options.maxInstances = {
+                    'lists_create_with': 1,
+                    'lists_create_with_mutator': 1
+                };
+            }
+        }
+
+        function initWorkspace() {
+            try {
+                const workspace = Blockly.inject('blocklyDiv', {
+                    toolbox: document.getElementById('toolbox'),
+                    trashcan: true,
+                    scrollbars: true,
+                    zoom: {
+                        controls: true,
+                        wheel: true,
+                        startScale: 1.0,
+                        maxScale: 3,
+                        minScale: 0.3,
+                        scaleSpeed: 1.2
+                    },
+                    grid: {
+                        spacing: 20,
+                        length: 3,
+                        colour: '#ccc',
+                        snap: true
+                    },
+                    // Add maxInstances option to prevent list block stacking
+                    maxInstances: {
+                        'lists_create_with': 1,
+                        'lists_create_with_mutator': 1
+                    },
+                    theme: {
+                        'blockStyles': {
+                            'logic_blocks': { 'colourPrimary': '#FF8C1A' },
+                            'loop_blocks': { 'colourPrimary': '#FFD500' },
+                            'math_blocks': { 'colourPrimary': '#FF6B6B' },
+                            'text_blocks': { 'colourPrimary': '#4ECDC4' },
+                            'list_blocks': { 'colourPrimary': '#6C5CE7' },
+                            'variable_blocks': { 'colourPrimary': '#FF9F1C' },
+                            'procedure_blocks': { 'colourPrimary': '#A8E6CF' },
+                            'action_blocks': { 'colourPrimary': '#FF8B94' },
+                            'tkinter_blocks': { 'colourPrimary': '#E53935' }
+                        },
+                        'componentStyles': {
+                            'workspaceBackgroundColour': '#f5f5f5',
+                            'toolboxBackgroundColour': '#ffffff',
+                            'toolboxForegroundColour': '#000000',
+                            'flyoutBackgroundColour': '#ffffff',
+                            'flyoutForegroundColour': '#000000',
+                            'flyoutOpacity': 1,
+                            'scrollbarColour': '#cccccc',
+                            'insertionMarkerColour': '#000000',
+                            'insertionMarkerOpacity': 0.3,
+                            'scrollbarOpacity': 0.4,
+                            'blackBackground': '#000000'
+                        }
+                    }
+                });
+                return workspace;
+            } catch (error) {
+                console.error('Error initializing Blockly workspace:', error);
+                alert('Failed to initialize Blockly workspace. Please check the console for details.');
+                return null;
+            }
+        }
+
+        // Update save functionality
+        function saveBlocks() {
+            if (!workspace) {
+                alert('Workspace not initialized. Please refresh the page.');
+                return;
+            }
+
+            try {
+                const xml = Blockly.Xml.workspaceToDom(workspace);
+                const xmlText = Blockly.utils.xml.domToText(xml);
+                
+                // Create a file input for saving
+                const saveInput = document.createElement('input');
+                saveInput.type = 'file';
+                saveInput.accept = '.pye';
+                saveInput.style.display = 'none';
+                // Use the current project name from the top bar
+                const projectNameElement = document.getElementById('projectName');
+                const currentName = projectNameElement.textContent.trim();
+                saveInput.nwsaveas = currentName + '.pye';
+                document.body.appendChild(saveInput);
+
+                // Create a dialog for filename input
+                const dialog = document.createElement('div');
+                dialog.style.cssText = `
+                    position: fixed;
+                    top: 50%;
+                    left: 50%;
+                    transform: translate(-50%, -50%);
+                    background: white;
+                    padding: 20px;
+                    border-radius: 8px;
+                    box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+                    z-index: 1000;
+                    min-width: 300px;
+                `;
+
+                const title = document.createElement('h3');
+                title.textContent = 'Save Project';
+                title.style.margin = '0 0 15px 0';
+                dialog.appendChild(title);
+
+                const input = document.createElement('input');
+                input.type = 'text';
+                input.value = currentName; // Use current project name
+                input.style.cssText = `
+                    width: 100%;
+                    padding: 8px;
+                    margin: 10px 0;
+                    border: 1px solid #ccc;
+                    border-radius: 4px;
+                    box-sizing: border-box;
+                `;
+                dialog.appendChild(input);
+
+                const buttonContainer = document.createElement('div');
+                buttonContainer.style.cssText = `
+                    display: flex;
+                    justify-content: flex-end;
+                    gap: 10px;
+                    margin-top: 15px;
+                `;
+
+                const cancelButton = document.createElement('button');
+                cancelButton.textContent = 'Cancel';
+                cancelButton.style.cssText = `
+                    padding: 8px 16px;
+                    background: #ff4444;
+                    color: white;
+                    border: none;
+                    border-radius: 4px;
+                    cursor: pointer;
+                    transition: background-color 0.2s;
+                `;
+                cancelButton.onmouseover = () => {
+                    cancelButton.style.backgroundColor = '#ff0000';
+                };
+                cancelButton.onmouseout = () => {
+                    cancelButton.style.backgroundColor = '#ff4444';
+                };
+                cancelButton.onclick = () => {
+                    document.body.removeChild(overlay);
+                    document.body.removeChild(dialog);
+                    document.body.removeChild(saveInput);
+                };
+
+                const saveButton = document.createElement('button');
+                saveButton.textContent = 'Save';
+                saveButton.style.cssText = `
+                    padding: 8px 16px;
+                    background: #4CAF50;
+                    color: white;
+                    border: none;
+                    border-radius: 4px;
+                    cursor: pointer;
+                `;
+                saveButton.onclick = () => {
+                    const filename = input.value.endsWith('.pye') ? input.value : input.value + '.pye';
+                    
+                    // Update the project name in the top bar
+                    const newName = filename.replace('.pye', '');
+                    projectNameElement.textContent = newName;
+                    currentProjectName = newName;
+                    
+                    // Create and download the file
+                    const blob = new Blob([xmlText], {type: 'text/xml'});
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = filename;
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                    URL.revokeObjectURL(url);
+
+                    // Show success message
+                    const saveMessage = document.createElement('div');
+                    saveMessage.textContent = 'Project saved successfully!';
+                    saveMessage.style.cssText = `
+                        position: fixed;
+                        top: 20px;
+                        right: 20px;
+                        background: #4CAF50;
+                        color: white;
+                        padding: 10px 20px;
+                        border-radius: 4px;
+                        box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+                        z-index: 1000;
+                        transition: opacity 0.3s;
+                    `;
+                    document.body.appendChild(saveMessage);
+                    setTimeout(() => {
+                        saveMessage.style.opacity = '0';
+                        setTimeout(() => document.body.removeChild(saveMessage), 300);
+                    }, 2000);
+
+                    // Clean up
+                    document.body.removeChild(dialog);
+                    document.body.removeChild(saveInput);
+                };
+
+                buttonContainer.appendChild(cancelButton);
+                buttonContainer.appendChild(saveButton);
+                dialog.appendChild(buttonContainer);
+
+                // Add overlay
+                const overlay = document.createElement('div');
+                overlay.style.cssText = `
+                    position: fixed;
+                    top: 0;
+                    left: 0;
+                    right: 0;
+                    bottom: 0;
+                    background: rgba(0,0,0,0.5);
+                    z-index: 999;
+                `;
+                overlay.onclick = () => {
+                    document.body.removeChild(overlay);
+                    document.body.removeChild(dialog);
+                    document.body.removeChild(saveInput);
+                };
+
+                document.body.appendChild(overlay);
+                document.body.appendChild(dialog);
+                input.focus();
+                input.select();
+
+            } catch (error) {
+                console.error('Error saving blocks:', error);
+                alert('Error saving project: ' + error.message);
+            }
+        }
+
+        function loadBlocks(file) {
+            if (!workspace) {
+                alert('Workspace not initialized. Please refresh the page.');
+                return;
+            }
+
+            if (!file) return;
+            
+            // Check file extension
+            if (!file.name.endsWith('.pye')) {
+                alert('Please select a .pye file');
+                return;
+            }
+
+            // Update project name from filename
+            const projectName = file.name.replace('.pye', '');
+            const projectNameElement = document.getElementById('projectName');
+            projectNameElement.textContent = projectName;
+            currentProjectName = projectName;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    // Clear the workspace first
+                    workspace.clear();
+                    
+                    // Parse and load the XML using the correct API
+                    const xml = Blockly.utils.xml.textToDom(e.target.result);
+                    Blockly.Xml.domToWorkspace(xml, workspace);
+
+                    // Show success message
+                    const loadMessage = document.createElement('div');
+                    loadMessage.textContent = 'Project loaded successfully!';
+                    loadMessage.style.cssText = `
+                        position: fixed;
+                        top: 20px;
+                        right: 20px;
+                        background: #2196F3;
+                        color: white;
+                        padding: 10px 20px;
+                        border-radius: 4px;
+                        box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+                        z-index: 1000;
+                        transition: opacity 0.3s;
+                    `;
+                    document.body.appendChild(loadMessage);
+                    setTimeout(() => {
+                        loadMessage.style.opacity = '0';
+                        setTimeout(() => document.body.removeChild(loadMessage), 300);
+                    }, 2000);
+
+                    // Update the code area
+                    const code = Blockly.Python.workspaceToCode(workspace);
+                    document.getElementById('codeArea').textContent = code;
+                } catch (error) {
+                    console.error('Error loading blocks:', error);
+                    alert('Error loading project: ' + error.message);
+                }
+            };
+            reader.onerror = function() {
+                alert('Error reading file');
+            };
+            reader.readAsText(file);
+        }
+
+        // Add save as Python functionality
+        function saveAsPython() {
+            if (!workspace) {
+                alert('Workspace not initialized. Please refresh the page.');
+                return;
+            }
+
+            try {
+                // Generate Python code
+                const code = Blockly.Python.workspaceToCode(workspace);
+                if (!code.trim()) {
+                    alert('No code to save. Please generate Python code first.');
+                    return;
+                }
+
+                // Create a blob with the Python code
+                const blob = new Blob([code], {type: 'text/plain'});
+                const url = URL.createObjectURL(blob);
+                
+                // Create a link element that will trigger the system save dialog
+                const a = document.createElement('a');
+                a.href = url;
+                // Use the current project name for the Python file
+                const projectName = document.getElementById('projectName').textContent.trim();
+                a.download = projectName + '.py';
+                a.style.display = 'none';
+                document.body.appendChild(a);
+                
+                // Trigger the system save dialog
+                a.click();
+                
+                // Clean up
+                setTimeout(() => {
+                    document.body.removeChild(a);
+                    URL.revokeObjectURL(url);
+                }, 100);
+
+                // Show success message
+                const saveMessage = document.createElement('div');
+                saveMessage.textContent = 'Python file saved successfully!';
+                saveMessage.style.cssText = `
+                    position: fixed;
+                    top: 20px;
+                    right: 20px;
+                    background: #4CAF50;
+                    color: white;
+                    padding: 10px 20px;
+                    border-radius: 4px;
+                    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+                    z-index: 1000;
+                    transition: opacity 0.3s;
+                `;
+                document.body.appendChild(saveMessage);
+                setTimeout(() => {
+                    saveMessage.style.opacity = '0';
+                    setTimeout(() => document.body.removeChild(saveMessage), 300);
+                }, 2000);
+
+            } catch (error) {
+                console.error('Error saving Python file:', error);
+                alert('Error saving Python file: ' + error.message);
+            }
+        }
+
+        // Add Python code execution functionality
+        function runPythonCode() {
+            if (!workspace) {
+                alert('Workspace not initialized. Please refresh the page.');
+                return;
+            }
+
+            try {
+                // Generate Python code
+                const code = Blockly.Python.workspaceToCode(workspace);
+                if (!code.trim()) {
+                    alert('No code to run. Please generate Python code first.');
+                    return;
+                }
+
+                // Check for unsupported features
+                const unsupportedFeatures = [];
+                if (code.includes('import tkinter') || code.includes('tk.Tk()')) {
+                    unsupportedFeatures.push('Tkinter GUI applications');
+                }
+                if (code.includes('input(') || code.includes('raw_input(')) {
+                    unsupportedFeatures.push('Interactive input (input() or raw_input())');
+                }
+
+                if (unsupportedFeatures.length > 0) {
+                    const dialog = document.createElement('div');
+                    dialog.id = 'outputDialog';
+                    
+                    const title = document.createElement('div');
+                    title.id = 'outputTitle';
+                    title.innerHTML = `
+                        <h3 style="margin: 0;">Unsupported Features</h3>
+                        <button id="outputClose" style="background: none; border: none; font-size: 20px; cursor: pointer;">×</button>
+                    `;
+                    
+                    const content = document.createElement('div');
+                    content.id = 'outputContent';
+                    content.innerHTML = `
+                        <p>The following features cannot be run directly in the browser:</p>
+                        <ul>
+                            ${unsupportedFeatures.map(feature => `<li>${feature}</li>`).join('')}
+                        </ul>
+                        <p>To run your program:</p>
+                        <ol>
+                            <li>Click "Save as Python" to save your code as a .py file</li>
+                            <li>Run the saved file using Python on your computer</li>
+                        </ol>
+                        <p>This is because browsers have limitations on:</p>
+                        <ul>
+                            <li>Creating desktop windows (for Tkinter)</li>
+                            <li>Handling interactive user input</li>
+                            <li>Accessing system resources</li>
+                        </ul>
+                    `;
+                    
+                    dialog.appendChild(title);
+                    dialog.appendChild(content);
+
+                    // Add overlay
+                    const overlay = document.createElement('div');
+                    overlay.style.cssText = `
+                        position: fixed;
+                        top: 0;
+                        left: 0;
+                        right: 0;
+                        bottom: 0;
+                        background: rgba(0,0,0,0.5);
+                        z-index: 999;
+                    `;
+
+                    document.body.appendChild(overlay);
+                    document.body.appendChild(dialog);
+
+                    // Close button functionality
+                    document.getElementById('outputClose').onclick = () => {
+                        document.body.removeChild(overlay);
+                        document.body.removeChild(dialog);
+                    };
+
+                    // Overlay click to close
+                    overlay.onclick = () => {
+                        document.body.removeChild(overlay);
+                        document.body.removeChild(dialog);
+                    };
+
+                    return;
+                }
+
+                // Create output dialog for supported code
+                const dialog = document.createElement('div');
+                dialog.id = 'outputDialog';
+                
+                const title = document.createElement('div');
+                title.id = 'outputTitle';
+                title.innerHTML = `
+                    <h3 style="margin: 0;">Program Output</h3>
+                    <button id="outputClose" style="background: none; border: none; font-size: 20px; cursor: pointer;">×</button>
+                `;
+                
+                const content = document.createElement('div');
+                content.id = 'outputContent';
+                content.textContent = 'Running program...';
+                
+                dialog.appendChild(title);
+                dialog.appendChild(content);
+
+                // Add overlay
+                const overlay = document.createElement('div');
+                overlay.style.cssText = `
+                    position: fixed;
+                    top: 0;
+                    left: 0;
+                    right: 0;
+                    bottom: 0;
+                    background: rgba(0,0,0,0.5);
+                    z-index: 999;
+                `;
+
+                document.body.appendChild(overlay);
+                document.body.appendChild(dialog);
+
+                // Close button functionality
+                document.getElementById('outputClose').onclick = () => {
+                    document.body.removeChild(overlay);
+                    document.body.removeChild(dialog);
+                };
+
+                // Overlay click to close
+                overlay.onclick = () => {
+                    document.body.removeChild(overlay);
+                    document.body.removeChild(dialog);
+                };
+
+                // Create a safe environment for code execution
+                const safeCode = `import sys
+from io import StringIO
+import traceback
+
+# Redirect stdout and stderr
+old_stdout = sys.stdout
+old_stderr = sys.stderr
+stdout_capture = StringIO()
+stderr_capture = StringIO()
+sys.stdout = stdout_capture
+sys.stderr = stderr_capture
+
+# Override input() to return a default value
+def input(prompt=''):
+    print(prompt, end='', file=sys.stdout)
+    return "Browser input not supported"
+
+try:
+    # Execute the code
+${code.split('\n').map(line => '    ' + line).join('\n')}
+except Exception as e:
+    print(f"Error: {str(e)}", file=sys.stderr)
+    print(traceback.format_exc(), file=sys.stderr)
+finally:
+    # Restore stdout and stderr
+    sys.stdout = old_stdout
+    sys.stderr = old_stderr
+    stdout_output = stdout_capture.getvalue()
+    stderr_output = stderr_capture.getvalue()`;
+
+                // Use Pyodide to run the code
+                if (typeof pyodide === 'undefined') {
+                    // Load Pyodide if not already loaded
+                    const script = document.createElement('script');
+                    script.src = 'https://cdn.jsdelivr.net/pyodide/v0.24.1/full/pyodide.js';
+                    script.onload = () => {
+                        loadPyodide().then(pyodide => {
+                            runCodeWithPyodide(pyodide, safeCode, content);
+                        });
+                    };
+                    document.head.appendChild(script);
+                } else {
+                    runCodeWithPyodide(pyodide, safeCode, content);
+                }
+
+            } catch (error) {
+                console.error('Error running code:', error);
+                alert('Error running code: ' + error.message);
+            }
+        }
+
+        function runCodeWithPyodide(pyodide, code, outputElement) {
+            try {
+                pyodide.runPythonAsync(code).then(() => {
+                    const stdout = pyodide.globals.get('stdout_output');
+                    const stderr = pyodide.globals.get('stderr_output');
+                    
+                    if (stderr) {
+                        outputElement.innerHTML = `<span class="output-error">${stderr}</span>`;
+                    } else if (stdout) {
+                        outputElement.innerHTML = `<span class="output-success">${stdout}</span>`;
+                    } else {
+                        outputElement.innerHTML = '<span class="output-success">Program executed successfully (no output)</span>';
+                    }
+                }).catch(error => {
+                    outputElement.innerHTML = `<span class="output-error">Error: ${error.message}</span>`;
+                });
+            } catch (error) {
+                outputElement.innerHTML = `<span class="output-error">Error: ${error.message}</span>`;
+            }
+
+        }
+
+        // Update the event listeners
+        window.addEventListener('DOMContentLoaded', () => {
+            if (typeof Blockly === 'undefined') {
+                console.error('Blockly library failed to load');
+                alert('Failed to load Blockly library. Please check your internet connection and try again.');
+                return;
+            }
+
+            defineCustomBlocks();
+            workspace = initWorkspace();
+            
+            if (!workspace) {
+                return;
+            }
+
+            document.getElementById('generateBtn').addEventListener('click', () => {
+                const code = Blockly.Python.workspaceToCode(workspace);
+                document.getElementById('codeArea').textContent = code;
+            });
+
+            document.getElementById('runBtn').addEventListener('click', () => {
+                const code = Blockly.Python.workspaceToCode(workspace);
+                
+                // Check if the code contains any interactive elements
+                const hasInteractiveElements = code.includes('tkinter') || 
+                                             code.includes('input(') || 
+                                             code.includes('print(') ||
+                                             workspace.getBlocksByType('tkinter_window').length > 0 ||
+                                             workspace.getBlocksByType('tkinter_button').length > 0 ||
+                                             workspace.getBlocksByType('tkinter_entry').length > 0 ||
+                                             workspace.getBlocksByType('tkinter_text').length > 0;
+
+                if (hasInteractiveElements) {
+                    // For interactive code, we'll show a message explaining why it can't be run directly
+                    const outputDialog = document.createElement('div');
+                    outputDialog.className = 'dialog';
+                    outputDialog.innerHTML = `
+                        <div class="dialog-title">Interactive Code Detected</div>
+                        <div class="dialog-content">
+                            <p>Your code contains interactive elements (GUI components or user input) that cannot be run directly in the browser.</p>
+                            <p>To run this code:</p>
+                            <ol>
+                                <li>Click "Save as Python" to download the .py file</li>
+                                <li>Run the file using Python on your computer</li>
+                            </ol>
+                            <p>Make sure you have Python and the required libraries installed.</p>
+                        </div>
+                        <div class="dialog-buttons">
+                            <button class="dialog-button secondary" onclick="this.parentElement.parentElement.remove()">Close</button>
+                        </div>
+                    `;
+                    document.body.appendChild(outputDialog);
+                } else {
+                    // For non-interactive code, we can try to run it
+                    try {
+                        // Create a safe evaluation environment
+                        const safeEval = new Function('return eval(arguments[0])');
+                        const result = safeEval(code);
+                        
+                        // Show the result in a dialog
+                        const outputDialog = document.createElement('div');
+                        outputDialog.className = 'dialog';
+                        outputDialog.innerHTML = `
+                            <div class="dialog-title">Code Output</div>
+                            <div class="dialog-content">
+                                <pre style="background: var(--background-color); padding: 12px; border-radius: 4px; overflow: auto;">${result !== undefined ? result : 'Code executed successfully (no output)'}</pre>
+                            </div>
+                            <div class="dialog-buttons">
+                                <button class="dialog-button secondary" onclick="this.parentElement.parentElement.remove()">Close</button>
+                            </div>
+                        `;
+                        document.body.appendChild(outputDialog);
+                    } catch (error) {
+                        // Show any errors in a dialog
+                        const outputDialog = document.createElement('div');
+                        outputDialog.className = 'dialog';
+                        outputDialog.innerHTML = `
+                            <div class="dialog-title">Error</div>
+                            <div class="dialog-content">
+                                <p style="color: var(--danger-color);">An error occurred while running the code:</p>
+                                <pre style="background: var(--background-color); padding: 12px; border-radius: 4px; overflow: auto;">${error.message}</pre>
+                            </div>
+                            <div class="dialog-buttons">
+                                <button class="dialog-button secondary" onclick="this.parentElement.parentElement.remove()">Close</button>
+                            </div>
+                        `;
+                        document.body.appendChild(outputDialog);
+                    }
+                }
+            });
+
+            // Update save button
+            const saveBtn = document.getElementById('saveBtn');
+            saveBtn.addEventListener('click', saveBlocks);
+
+            // Update load button to use file input
+            const loadBtn = document.getElementById('loadBtn');
+            const fileInput = document.createElement('input');
+            fileInput.type = 'file';
+            fileInput.accept = '.pye';
+            fileInput.style.display = 'none';
+            document.body.appendChild(fileInput);
+
+            fileInput.addEventListener('change', (e) => {
+                if (e.target.files.length > 0) {
+                    loadBlocks(e.target.files[0]);
+                }
+            });
+
+            loadBtn.addEventListener('click', () => {
+                fileInput.click();
+            });
+
+            // Add drag and drop support
+            const blocklyDiv = document.getElementById('blocklyDiv');
+            blocklyDiv.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                blocklyDiv.style.border = '2px dashed #2196F3';
+            });
+
+            blocklyDiv.addEventListener('dragleave', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                blocklyDiv.style.border = 'none';
+            });
+
+            blocklyDiv.addEventListener('drop', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                blocklyDiv.style.border = 'none';
+
+                const file = e.dataTransfer.files[0];
+                if (file) {
+                    loadBlocks(file);
+                }
+            });
+
+            // Add auto-save functionality with .pye extension
+            let autoSaveTimeout;
+            workspace.addChangeListener(() => {
+                clearTimeout(autoSaveTimeout);
+                autoSaveTimeout = setTimeout(() => {
+                    try {
+                        const xml = Blockly.Xml.workspaceToDom(workspace);
+                        const xmlText = Blockly.utils.xml.domToText(xml);
+                        localStorage.setItem('blockly_autosave', xmlText);
+                    } catch (error) {
+                        console.error('Auto-save error:', error);
+                    }
+                }, 1000);
+            });
+
+            // Load auto-saved content if available
+            const savedXml = localStorage.getItem('blockly_autosave');
+            if (savedXml) {
+                try {
+                    const xml = Blockly.utils.xml.textToDom(savedXml);
+                    Blockly.Xml.domToWorkspace(xml, workspace);
+                } catch (error) {
+                    console.error('Error loading auto-saved content:', error);
+                }
+            }
+
+            // Add project name editing functionality
+            const projectNameElement = document.getElementById('projectName');
+            
+            projectNameElement.addEventListener('click', () => {
+                if (!projectNameElement.classList.contains('editing')) {
+                    projectNameElement.classList.add('editing');
+                    projectNameElement.contentEditable = true;
+                    projectNameElement.focus();
+                    
+                    // Select all text
+                    const range = document.createRange();
+                    range.selectNodeContents(projectNameElement);
+                    const selection = window.getSelection();
+                    selection.removeAllRanges();
+                    selection.addRange(range);
+                }
+            });
+
+            projectNameElement.addEventListener('blur', () => {
+                projectNameElement.classList.remove('editing');
+                projectNameElement.contentEditable = false;
+                
+                // Update project name if changed
+                const newName = projectNameElement.textContent.trim();
+                if (newName && newName !== currentProjectName) {
+                    currentProjectName = newName;
+                    // Update save dialog default filename
+                    if (typeof saveInput !== 'undefined') {
+                        saveInput.nwsaveas = currentProjectName + '.pye';
+                    }
+                } else {
+                    projectNameElement.textContent = currentProjectName;
+                }
+            });
+
+            projectNameElement.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    projectNameElement.blur();
+                }
+            });
+
+            // Add save as Python button event listener
+            document.getElementById('savePyBtn').addEventListener('click', saveAsPython);
+        });
+
+        // Update block definitions to ensure proper loading
+        Blockly.defineBlocksWithJsonArray([
+            // ... existing block definitions ...
+            {
+                "type": "controls_switch",
+                "message0": "switch %1 %2",
+                "args0": [
+                    {
+                        "type": "input_value",
+                        "name": "SWITCH_EXPRESSION"
+                    },
+                    {
+                        "type": "input_statement",
+                        "name": "SWITCH_CASES"
+                    }
+                ],
+                "previousStatement": null,
+                "nextStatement": null,
+                "colour": "#FF8C1A",
+                "tooltip": "Switch statement",
+                "helpUrl": "",
+                "mutator": "controls_switch_mutator"
+            }
+        ]);
+
+        // Add mutator for switch statement
+        Blockly.Constants.Logic.SWITCH_DEFAULT_CASE = 'default';
+        Blockly.Constants.Logic.SWITCH_CASE_MUTATOR_EXTENSION = {
+            mutationToDom: function() {
+                const container = document.createElement('mutation');
+                container.setAttribute('cases', this.caseCount_);
+                container.setAttribute('default', this.hasDefault_);
+                return container;
+            },
+            domToMutation: function(xmlElement) {
+                this.caseCount_ = parseInt(xmlElement.getAttribute('cases'), 10) || 0;
+                this.hasDefault_ = (xmlElement.getAttribute('default') === 'true');
+                this.updateShape_();
+            },
+            updateShape_: function() {
+                // Update the block's shape based on the number of cases
+                // Implementation details...
+            }
+        };
+
+        // Register the mutator
+        Blockly.Extensions.registerMutator('controls_switch_mutator',
+            Blockly.Constants.Logic.SWITCH_CASE_MUTATOR_EXTENSION,
+            null, ['controls_case']);
+    </script>
+</body>
+</html>

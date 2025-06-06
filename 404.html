@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>404 - Page Not Found</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/feather-icons"></script>
+    <script type="module">
+        // Import the functions you need from the SDKs you need
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getDatabase, ref, get } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+        import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+
+        // Your web app's Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyA_UqkdEHecWAd-VWlKEn3op242gN29gEw",
+            authDomain: "ostechnologies-f8485.firebaseapp.com",
+            databaseURL: "https://ostechnologies-f8485-default-rtdb.firebaseio.com",
+            projectId: "ostechnologies-f8485",
+            storageBucket: "ostechnologies-f8485.firebasestorage.app",
+            messagingSenderId: "22075821057",
+            appId: "1:22075821057:web:cc171969a79be6eb420400",
+            measurementId: "G-QR2YH7BH6W"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const database = getDatabase(app);
+        const auth = getAuth(app);
+
+        // Make auth functions available globally
+        window.handleAuth = async () => {
+            try {
+                const provider = new GoogleAuthProvider();
+                await signInWithPopup(auth, provider);
+            } catch (error) {
+                console.error('Error signing in:', error);
+                alert('Error signing in: ' + error.message);
+            }
+        };
+
+        window.signOut = async () => {
+            try {
+                await signOut(auth);
+            } catch (error) {
+                console.error('Error signing out:', error);
+                alert('Error signing out: ' + error.message);
+            }
+        };
+
+        // Handle auth state changes
+        onAuthStateChanged(auth, (user) => {
+            const authButton = document.getElementById('authButton');
+            if (user) {
+                // User is signed in
+                authButton.innerHTML = `
+                    <div class="user-info" onclick="toggleUserMenu()">
+                        ${user.photoURL ? `<img src="${user.photoURL}" alt="Profile">` : ''}
+                        <span>${user.displayName || user.email}</span>
+                        <i data-feather="chevron-down" style="width: 16px; height: 16px;"></i>
+                    </div>
+                    <div class="user-menu" id="userMenu">
+                        <div class="user-menu-item">
+                            <i data-feather="user" style="width: 16px; height: 16px;"></i>
+                            <span>${user.displayName || user.email}</span>
+                        </div>
+                        <div class="user-menu-divider"></div>
+                        <div class="user-menu-item danger" onclick="signOut()">
+                            <i data-feather="log-out" style="width: 16px; height: 16px;"></i>
+                            Sign Out
+                        </div>
+                    </div>
+                `;
+            } else {
+                // User is signed out
+                authButton.innerHTML = `
+                    <button onclick="handleAuth()" class="btn btn-secondary">
+                        <i data-feather="log-in"></i>
+                        Sign In
+                    </button>
+                `;
+            }
+            feather.replace();
+        });
+
+        // Make menu toggle function available globally
+        window.toggleUserMenu = () => {
+            const menu = document.getElementById('userMenu');
+            if (menu) {
+                menu.classList.toggle('show');
+            }
+        };
+
+        // Close menu when clicking outside
+        document.addEventListener('click', (event) => {
+            const menu = document.getElementById('userMenu');
+            const userInfo = document.querySelector('.user-info');
+            if (menu && userInfo && !menu.contains(event.target) && !userInfo.contains(event.target)) {
+                menu.classList.remove('show');
+            }
+        });
+
+        // Check if this is a page URL
+        async function checkForPage() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const pageName = urlParams.get('s');
+            
+            if (pageName) {
+                try {
+                    console.log('Checking for page:', pageName); // Debug log
+                    const pageRef = ref(database, `pages/${pageName}`);
+                    const snapshot = await get(pageRef);
+                    
+                    if (snapshot.exists()) {
+                        console.log('Page found, redirecting to viewer'); // Debug log
+                        window.location.href = `/pageviewer.html?s=${pageName}`;
+                        return;
+                    } else {
+                        console.log('Page not found'); // Debug log
+                    }
+                } catch (error) {
+                    console.error('Error checking page:', error);
+                }
+            }
+        }
+
+        // Run the check when the page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log('DOM loaded, checking for page'); // Debug log
+            checkForPage();
+        });
+    </script>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .nav {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .nav-logo {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--text-color);
+            text-decoration: none;
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        .nav-links a {
+            color: var(--text-color);
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.2s;
+        }
+
+        .nav-links a:hover {
+            color: var(--primary-color);
+        }
+
+        .auth-button {
+            margin-left: 1rem;
+        }
+
+        .auth-button .btn {
+            padding: 0.5rem 1rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.9rem;
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .auth-button .btn:hover {
+            background: #3182ce;
+        }
+
+        .auth-button .btn i {
+            width: 16px;
+            height: 16px;
+        }
+
+        .auth-button .user-info {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--text-color);
+            font-size: 0.9rem;
+        }
+
+        .auth-button .user-info img {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+        }
+
+        .error-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+            text-align: center;
+            margin-top: 4rem;
+        }
+
+        .error-code {
+            font-size: 6rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin: 0;
+            line-height: 1;
+        }
+
+        .error-message {
+            font-size: 1.5rem;
+            color: var(--text-color);
+            margin: 1rem 0 2rem;
+        }
+
+        .error-actions {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border-radius: 4px;
+            font-size: 1rem;
+            font-weight: 500;
+            text-decoration: none;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+        }
+
+        .btn-primary:hover {
+            background: #3182ce;
+        }
+
+        .btn-secondary {
+            background: white;
+            color: var(--text-color);
+            border: 1px solid var(--border-color);
+        }
+
+        .btn-secondary:hover {
+            background: #f8fafc;
+        }
+    </style>
+</head>
+<body>
+    <nav class="nav">
+        <div class="nav-container">
+            <a href="/" class="nav-logo">Open Source Technologies</a>
+            <div class="nav-links">
+                <a href="/">Home</a>
+                <a href="/#features">Features</a>
+                <a href="/#about">About</a>
+                <a href="mailto:stanvandorsten@gmail.com">Contact</a>
+                <div id="authButton" class="auth-button">
+                    <button onclick="handleAuth()" class="btn btn-secondary">
+                        <i data-feather="log-in"></i>
+                        <span>Sign In</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="error-container">
+        <h1 class="error-code">404</h1>
+        <p class="error-message">Page not found</p>
+        <div class="error-actions">
+            <a href="/" class="btn btn-primary">
+                <i data-feather="home"></i>
+                Back to Home
+            </a>
+            <a href="/pagehost.html" class="btn btn-secondary">
+                <i data-feather="search"></i>
+                Search Pages
+            </a>
+        </div>
+    </div>
+
+    <script>
+        feather.replace();
+    </script>
+</body>
+</html>

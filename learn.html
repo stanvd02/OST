@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Learn More - OST</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/feather-icons"></script>
+    <style>
+        .learn-container {
+            padding: 8rem 2rem 4rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .vision-section {
+            text-align: center;
+            margin-bottom: 6rem;
+        }
+
+        .vision-section h1 {
+            font-size: 3.5rem;
+            margin-bottom: 1.5rem;
+            background: linear-gradient(to right, var(--primary-color), #4f46e5);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .vision-section p {
+            font-size: 1.25rem;
+            color: var(--secondary-color);
+            max-width: 800px;
+            margin: 0 auto 2rem;
+            line-height: 1.8;
+        }
+
+        .mission-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-bottom: 6rem;
+        }
+
+        .mission-card {
+            background: var(--card-background);
+            padding: 2rem;
+            border-radius: 1rem;
+            text-align: center;
+            transition: transform 0.3s ease;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        .mission-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .mission-card i {
+            width: 48px;
+            height: 48px;
+            color: var(--primary-color);
+            margin-bottom: 1.5rem;
+        }
+
+        .mission-card h3 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            color: var(--text-color);
+        }
+
+        .mission-card p {
+            color: var(--secondary-color);
+            line-height: 1.6;
+        }
+
+        .values-section {
+            background: var(--card-background);
+            padding: 4rem 2rem;
+            border-radius: 1rem;
+            margin-bottom: 6rem;
+        }
+
+        .values-section h2 {
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 3rem;
+            color: var(--text-color);
+        }
+
+        .values-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+        }
+
+        .value-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+        }
+
+        .value-item i {
+            width: 24px;
+            height: 24px;
+            color: var(--primary-color);
+            flex-shrink: 0;
+            margin-top: 0.25rem;
+        }
+
+        .value-content h4 {
+            font-size: 1.25rem;
+            margin-bottom: 0.5rem;
+            color: var(--text-color);
+        }
+
+        .value-content p {
+            color: var(--secondary-color);
+            line-height: 1.6;
+        }
+
+        .cta-section {
+            text-align: center;
+            padding: 4rem 2rem;
+            background: linear-gradient(45deg, var(--primary-color), #4f46e5);
+            border-radius: 1rem;
+            color: white;
+        }
+
+        .cta-section h2 {
+            font-size: 2.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .cta-section p {
+            font-size: 1.25rem;
+            margin-bottom: 2rem;
+            opacity: 0.9;
+        }
+
+        .cta-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+        }
+
+        .cta-button-white {
+            background: white;
+            color: var(--primary-color);
+            padding: 1rem 2rem;
+            border-radius: 0.5rem;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .cta-button-white:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .cta-button-outline {
+            background: transparent;
+            color: white;
+            padding: 1rem 2rem;
+            border-radius: 0.5rem;
+            text-decoration: none;
+            font-weight: 600;
+            border: 2px solid white;
+            transition: all 0.3s ease;
+        }
+
+        .cta-button-outline:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateY(-2px);
+        }
+
+        @media (max-width: 768px) {
+            .vision-section h1 {
+                font-size: 2.5rem;
+            }
+            
+            .cta-buttons {
+                flex-direction: column;
+            }
+            
+            .cta-button-white, .cta-button-outline {
+                width: 100%;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="gradient-bubble"></div>
+    <div class="gradient-bubble"></div>
+
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="/" class="logo" style="text-decoration: none;">OST</a>
+            <div class="nav-links">
+                <a href="/#features">Features</a>
+                <a href="/#about">About</a>
+                <a href="mailto:stanvandorsten@gmail.com">Contact</a>
+            </div>
+        </div>
+    </nav>
+
+    <main class="learn-container">
+        <section class="vision-section">
+            <h1>Democratizing Technology</h1>
+            <p>At OST, we believe that technology should be accessible to everyone, regardless of their coding knowledge or background. Our mission is to break down barriers and empower individuals to create, innovate, and solve problems using technology.</p>
+        </section>
+
+        <section class="mission-grid">
+            <div class="mission-card">
+                <i data-feather="users"></i>
+                <h3>For Everyone</h3>
+                <p>We create tools that are intuitive and accessible, making technology available to students, educators, creators, and professionals alike.</p>
+            </div>
+            <div class="mission-card">
+                <i data-feather="code"></i>
+                <h3>No Coding Required</h3>
+                <p>Our visual tools and intuitive interfaces allow anyone to build and create, without needing to learn complex programming languages.</p>
+            </div>
+            <div class="mission-card">
+                <i data-feather="heart"></i>
+                <h3>Open Source</h3>
+                <p>All our tools are free and open source, fostering a community of collaboration and continuous improvement.</p>
+            </div>
+        </section>
+
+        <section class="values-section">
+            <h2>Our Values</h2>
+            <div class="values-grid">
+                <div class="value-item">
+                    <i data-feather="globe"></i>
+                    <div class="value-content">
+                        <h4>Accessibility</h4>
+                        <p>Making technology accessible to everyone, everywhere, regardless of their background or resources.</p>
+                    </div>
+                </div>
+                <div class="value-item">
+                    <i data-feather="book-open"></i>
+                    <div class="value-content">
+                        <h4>Education</h4>
+                        <p>Empowering learning through intuitive tools that make technology concepts easy to understand.</p>
+                    </div>
+                </div>
+                <div class="value-item">
+                    <i data-feather="users"></i>
+                    <div class="value-content">
+                        <h4>Community</h4>
+                        <p>Building a supportive community where everyone can learn, share, and grow together.</p>
+                    </div>
+                </div>
+                <div class="value-item">
+                    <i data-feather="zap"></i>
+                    <div class="value-content">
+                        <h4>Innovation</h4>
+                        <p>Continuously improving our tools and creating new solutions to meet evolving needs.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="cta-section">
+            <h2>Join Our Mission</h2>
+            <p>Be part of a movement to make technology accessible to everyone. Start creating today with our free tools.</p>
+            <div class="cta-buttons">
+                <a href="apps.html" class="cta-button-white">Explore Tools</a>
+                <a href="mailto:stanvandorsten@gmail.com" class="cta-button-outline">Contact Us</a>
+            </div>
+        </section>
+
+        <section class="contact-section" style="text-align: center; margin-top: 4rem;">
+            <h2 style="font-size: 2.5rem; margin-bottom: 1.5rem;">Get in Touch</h2>
+            <p style="font-size: 1.25rem; color: var(--secondary-color); margin-bottom: 2rem;">
+                Have questions, suggestions, or want to collaborate? We'd love to hear from you!
+            </p>
+            <a href="mailto:stanvandorsten@gmail.com" style="
+                display: inline-flex;
+                align-items: center;
+                gap: 0.5rem;
+                background: var(--primary-color);
+                color: white;
+                padding: 1rem 2rem;
+                border-radius: 0.5rem;
+                text-decoration: none;
+                font-weight: 600;
+                transition: all 0.3s ease;
+            ">
+                <i data-feather="mail"></i>
+                stanvandorsten@gmail.com
+            </a>
+        </section>
+    </main>
+
+    <footer>
+        <div class="footer-content">
+            <div class="footer-section">
+                <h4>OST</h4>
+                <p>Open Source Technologies</p>
+            </div>
+            <div class="footer-section">
+                <h4>Quick Links</h4>
+                <div class="footer-links">
+                    <a href="/">Home</a>
+                    <a href="/#features">Features</a>
+                    <a href="/#about">About</a>
+                    <a href="mailto:stanvandorsten@gmail.com">Contact</a>
+                    <a href="/admin.html" class="admin-link">Admin</a>
+                </div>
+            </div>
+            <div class="footer-section">
+                <h4>Connect</h4>
+                <div class="social-links">
+                    <a href="#"><i data-feather="github"></i></a>
+                    <a href="#"><i data-feather="twitter"></i></a>
+                    <a href="#"><i data-feather="linkedin"></i></a>
+                </div>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2024 OST. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        feather.replace();
+    </script>
+</body>
+</html> 

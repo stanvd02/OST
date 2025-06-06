@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Loading Page...</title>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+        }
+
+        #loading {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #f8fafc;
+            color: #64748b;
+            font-size: 1.25rem;
+        }
+
+        #error {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            background: #f8fafc;
+            color: #ef4444;
+            font-size: 1.25rem;
+            text-align: center;
+            padding: 2rem;
+        }
+
+        #error a {
+            color: #3b82f6;
+            text-decoration: none;
+            margin-top: 1rem;
+            display: inline-block;
+        }
+
+        #error a:hover {
+            text-decoration: underline;
+        }
+
+        #content {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div id="loading">Loading page...</div>
+    <div id="error">
+        <div>
+            <h2>Page Not Found</h2>
+            <p>The page you're looking for doesn't exist or has been removed.</p>
+            <a href="/">Return to Home</a>
+        </div>
+    </div>
+    <div id="content"></div>
+
+    <script>
+        // Initialize Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyA_UqkdEHecWAd-VWlKEn3op242gN29gEw",
+            authDomain: "ostechnologies-f8485.firebaseapp.com",
+            databaseURL: "https://ostechnologies-f8485-default-rtdb.firebaseio.com",
+            projectId: "ostechnologies-f8485",
+            storageBucket: "ostechnologies-f8485.firebasestorage.app",
+            messagingSenderId: "22075821057",
+            appId: "1:22075821057:web:cc171969a79be6eb420400",
+            measurementId: "G-QR2YH7BH6W"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+
+        // Get page name from URL
+        const pathParts = window.location.pathname.split('/');
+        const pageName = pathParts[pathParts.length - 1];
+
+        // Load page content
+        async function loadPage() {
+            try {
+                const snapshot = await database.ref(`pages/${pageName}`).once('value');
+                const page = snapshot.val();
+
+                if (!page) {
+                    showError();
+                    return;
+                }
+
+                // Set page title
+                document.title = page.title;
+
+                // Create a container for the page content
+                const content = document.getElementById('content');
+                content.innerHTML = page.content;
+
+                // Hide loading, show content
+                document.getElementById('loading').style.display = 'none';
+                content.style.display = 'block';
+
+                // Execute any scripts in the content
+                const scripts = content.getElementsByTagName('script');
+                for (let script of scripts) {
+                    const newScript = document.createElement('script');
+                    newScript.textContent = script.textContent;
+                    script.parentNode.replaceChild(newScript, script);
+                }
+            } catch (error) {
+                console.error('Error loading page:', error);
+                showError();
+            }
+        }
+
+        function showError() {
+            document.getElementById('loading').style.display = 'none';
+            document.getElementById('error').style.display = 'flex';
+        }
+
+        // Load page on startup
+        loadPage();
+    </script>
+</body>
+</html> 

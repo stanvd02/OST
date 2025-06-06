@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OST Apps - Open Source Technologies</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/feather-icons"></script>
+    <style>
+        .apps-container {
+            padding: 8rem 2rem 4rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .apps-header {
+            text-align: center;
+            margin-bottom: 4rem;
+        }
+
+        .apps-header h1 {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            background: linear-gradient(to right, var(--primary-color), #4f46e5);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .apps-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+
+        .app-card {
+            background: var(--card-background);
+            border-radius: 1rem;
+            overflow: hidden;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        .app-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+
+        .app-card-image {
+            width: 100%;
+            height: 200px;
+            background: linear-gradient(45deg, var(--primary-color), #4f46e5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .app-card-image i {
+            width: 64px;
+            height: 64px;
+            color: white;
+        }
+
+        .app-card-content {
+            padding: 1.5rem;
+        }
+
+        .app-card-content h3 {
+            margin-bottom: 0.5rem;
+            font-size: 1.5rem;
+        }
+
+        .app-card-content p {
+            color: var(--secondary-color);
+            margin-bottom: 1.5rem;
+        }
+
+        .app-card-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 1.5rem;
+            background: rgba(0, 0, 0, 0.02);
+            border-top: 1px solid var(--border-color);
+        }
+
+        .app-tags {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .app-tag {
+            background: rgba(37, 99, 235, 0.1);
+            color: var(--primary-color);
+            padding: 0.25rem 0.75rem;
+            border-radius: 1rem;
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+
+        .launch-button {
+            background: var(--primary-color);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            text-decoration: none;
+            font-weight: 500;
+            transition: background-color 0.3s ease;
+        }
+
+        .launch-button:hover {
+            background: var(--primary-hover);
+        }
+
+        @media (max-width: 768px) {
+            .apps-header h1 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="gradient-bubble"></div>
+    <div class="gradient-bubble"></div>
+
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="/" class="logo" style="text-decoration: none;">OST</a>
+            <div class="nav-links">
+                <a href="/#features">Features</a>
+                <a href="/#about">About</a>
+                <a href="mailto:stanvandorsten@gmail.com">Contact</a>
+            </div>
+        </div>
+    </nav>
+
+    <main class="apps-container">
+        <div class="apps-header">
+            <h1>Our Applications</h1>
+            <p class="subtitle">Discover our suite of powerful open-source tools</p>
+        </div>
+
+        <div class="apps-grid">
+            <div class="app-card">
+                <div class="app-card-image">
+                    <i data-feather="code"></i>
+                </div>
+                <div class="app-card-content">
+                    <h3>Python Visual Coder</h3>
+                    <p>A powerful visual programming environment for Python, making coding more accessible and intuitive.</p>
+                </div>
+                <div class="app-card-footer">
+                    <div class="app-tags">
+                        <span class="app-tag">Python</span>
+                        <span class="app-tag">Visual</span>
+                    </div>
+                    <a href="PYVC.html" class="launch-button">Launch App</a>
+                </div>
+            </div>
+
+            <div class="app-card">
+                <div class="app-card-image">
+                    <i data-feather="file-text"></i>
+                </div>
+                <div class="app-card-content">
+                    <h3>Page Hosting</h3>
+                    <p>Upload and host your HTML pages with clean URLs. Share your content with the world.</p>
+                </div>
+                <div class="app-card-footer">
+                    <div class="app-tags">
+                        <span class="app-tag">HTML</span>
+                        <span class="app-tag">Hosting</span>
+                    </div>
+                    <a href="pagehost.html" class="launch-button">Launch App</a>
+                </div>
+            </div>
+
+            <!-- Placeholder for future apps -->
+            <div class="app-card" style="opacity: 0.5;">
+                <div class="app-card-image">
+                    <i data-feather="plus"></i>
+                </div>
+                <div class="app-card-content">
+                    <h3>More Coming Soon</h3>
+                    <p>We're constantly developing new tools to empower developers and creators.</p>
+                </div>
+                <div class="app-card-footer">
+                    <div class="app-tags">
+                        <span class="app-tag">Coming Soon</span>
+                    </div>
+                    <button class="launch-button" disabled>Stay Tuned</button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="footer-content">
+            <div class="footer-section">
+                <h4>OST</h4>
+                <p>Open Source Technologies</p>
+            </div>
+            <div class="footer-section">
+                <h4>Quick Links</h4>
+                <div class="footer-links">
+                    <a href="/">Home</a>
+                    <a href="/#features">Features</a>
+                    <a href="/#about">About</a>
+                    <a href="mailto:stanvandorsten@gmail.com">Contact</a>
+                    <a href="/admin.html" class="admin-link">Admin</a>
+                </div>
+            </div>
+            <div class="footer-section">
+                <h4>Connect</h4>
+                <div class="social-links">
+                    <a href="#"><i data-feather="github"></i></a>
+                    <a href="#"><i data-feather="twitter"></i></a>
+                    <a href="#"><i data-feather="linkedin"></i></a>
+                </div>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2024 OST. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        feather.replace();
+    </script>
+</body>
+</html> 
